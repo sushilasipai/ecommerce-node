@@ -1,9 +1,8 @@
 var app = require("./app");
-var database = require("./database");
-const port = 3001;
+var db = require("./database");
+const port = 3005;
 
-database
-  .connect()
+db.connect()
   .then((success) => {
     console.log("Connected Successfully");
     app.listen(port, () => {

@@ -1,19 +1,11 @@
-const mysql = require("mysql");
-const dbConfig = require("../database-config.js");
+const mongoose = require("mongoose");
 
-mysql.Promise = Promise;
+const mongoDBURL = "mongodb://localhost:27017/ecommercedb";
 
-// Create a connection to the database
-const connection = mysql.createConnection({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB,
-});
+mongoose.Promise = Promise;
 
-// open the MySQL connection
 let connect = () => {
-  return mysql.connect(connection, {
+  return mongoose.connect(mongoDBURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });

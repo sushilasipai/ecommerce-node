@@ -1,5 +1,5 @@
 const CustomerService = require("../../lib/customer");
-const RespondError = require("../../helpers/responseError");
+const RespondError = require("../../helpers/responseError.helpers");
 const customerController = {
   add_customer: async (req, res, next) => {
     let { name, address, contact } = req.body;
@@ -10,7 +10,6 @@ const customerController = {
     }
     try {
       let saved_customer = await CustomerService.add_customer(
-        cust_id,
         name,
         address,
         contact
@@ -23,6 +22,31 @@ const customerController = {
       return next(error);
     }
   },
+
+  update_customer: async (req, res, next) => {
+    let { name, address, contact } = req.body;
+    let { _id } = req.params;
+    if (!name) {
+      let error = new Error("Please enter name");
+      error.status = 422;
+      return RespondError.respondErr(error, req, res);
+    }
+    try {
+      let updated_customer = await CustomerService.update_customer(
+        _id,
+        name,
+        address,
+        contact
+      );
+      return res.status(200).json({
+        message: "Customer updated successfully",
+        customer: updated_customer,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   delete_customer: async (req, res, next) => {
     let { _id } = req.params;
     try {
@@ -50,7 +74,7 @@ const customerController = {
     let _id = req.params._id;
     try {
       let customer = await CustomerService.get_customer_by_id(_id);
-      if (customer === null) {
+      if (!customer) {
         return res.status(200).json({
           message: "customer not found",
         });
@@ -64,14 +88,10 @@ const customerController = {
     }
   },
   get_customer_by_name: async (req, res, next) => {
-    let _name = req.params._name;
+    let name = req.params.name;
     try {
-      let customers = await CustomerService.get_customer_by_name(_name);
-      if (customer === null) {
-        return res.status(200).json({
-          message: "customer not found",
-        });
-      }
+      let customers = await CustomerService.get_customer_by_name(name);
+
       return res.status(200).json({
         message: "name matched",
         customers,
@@ -89,6 +109,7 @@ const customerController = {
         customers,
       });
     } catch (error) {
+      console.log(error);
       return next(error);
     }
   },
